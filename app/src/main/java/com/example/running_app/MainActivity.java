@@ -1,4 +1,4 @@
-package com.example.running_app;  // use your own package name
+package com.example.running_app;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -11,6 +11,8 @@ import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
@@ -18,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
      Timer timer;
      TextView timerTextView;
      Button btnReset,btnStart, btnPause;
-        int seconds = 0, minutes = 0, hours = 0;
+        int seconds = 40, minutes = 4;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,21 +39,24 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {
                         // Increment the counter and update the TextView with the timer value
                         runOnUiThread(new Runnable() {
+
                             @Override
                             public void run() {
+                                if (minutes != 5){
+                                    seconds++;
+                                    if (seconds == 60) {
+                                        minutes++;
+                                        seconds = 0;
+                                    }
+                                    String timeString = String.format("%02d:%02d", minutes, seconds);
+                                    timerTextView.setText(timeString);
+                                }
+                                else {
+                                    timer.stopTimer();
+                                    Toast.makeText(MainActivity.this, "Max Time", Toast.LENGTH_SHORT).show();
+                                }
 
 
-                                seconds++;
-                                if (seconds == 60) {
-                                    minutes++;
-                                    seconds = 0;
-                                }
-                                if (minutes == 60) {
-                                    hours++;
-                                    minutes = 0;
-                                }
-                                String timeString = String.format("%02d:%02d:%02d", hours, minutes, seconds);
-                                timerTextView.setText(timeString);
                             }
                         });
                     }
@@ -91,9 +96,8 @@ public class MainActivity extends AppCompatActivity {
     public void ResetTimer(View v){
         timer.stopTimer();
         seconds = 0;
-        hours = 0;
         minutes = 0;
-        String timeString = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        String timeString = String.format("%02d:%02d", minutes, seconds);
         timerTextView.setText(timeString);
     }
     @Override
