@@ -8,52 +8,94 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Timer timer;
-    private TextView timerTextView;
-
+     Timer timer;
+     TextView timerTextView;
+     Button btnReset,btnStart, btnPause;
+        int seconds = 0, minutes = 0, hours = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        btnReset = findViewById(R.id.btnReset);
+        btnStart = findViewById(R.id.btnStart);
+        btnPause = findViewById(R.id.btnPause);
+        timerTextView = findViewById(R.id.tblkTimer);
 
-        timerTextView = findViewById(R.id.textView1);
-
-        // Implement your Runnable
-        Runnable myRunnable = new Runnable() {
-            int seconds = 0, minutes = 0, hours = 0;
-
+        btnStart.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void run() {
-                // Increment the counter and update the TextView with the timer value
-                runOnUiThread(new Runnable() {
+            public void onClick(View view) {
+                Runnable myRunnable = new Runnable() {
                     @Override
                     public void run() {
-                        seconds++;
-                        if (seconds == 60) {
-                            minutes++;
-                            seconds = 0;
-                        }
-                        if (minutes == 60) {
-                            hours++;
-                            minutes = 0;
-                        }
-                        String timeString = String.format("%02d:%02d:%02d", hours, minutes, seconds);
-                        timerTextView.setText(timeString);
+                        // Increment the counter and update the TextView with the timer value
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+
+
+                                seconds++;
+                                if (seconds == 60) {
+                                    minutes++;
+                                    seconds = 0;
+                                }
+                                if (minutes == 60) {
+                                    hours++;
+                                    minutes = 0;
+                                }
+                                String timeString = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+                                timerTextView.setText(timeString);
+                            }
+                        });
                     }
-                });
+                };
+
+
+                // Create an instance of the Timer class
+                timer = new Timer(myRunnable, 1000, true); // 1000 milliseconds interval, start the timer immediately
             }
-        };
+        });
 
+        // Implement your Runnable
 
-        // Create an instance of the Timer class
-        timer = new Timer(myRunnable, 1000, true); // 1000 milliseconds interval, start the timer immediately
+    }
+    public void PauseTimer(View v){
+        timer.stopTimer();
+    }
+    /*
+    public void StartTimer(View v){
+        timer.startTimer();
     }
 
+    public void StartOrPause(View v){
+        String currentMode = btnStartPause.getText().toString();
+
+        if (currentMode == "Start"){
+            timer.startTimer();
+            btnStartPause.setText("Pause");
+        }
+        else
+        {
+            timer.stopTimer();
+            btnStartPause.setText("Start");
+        }
+    }
+    */
+    public void ResetTimer(View v){
+        timer.stopTimer();
+        seconds = 0;
+        hours = 0;
+        minutes = 0;
+        String timeString = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        timerTextView.setText(timeString);
+    }
     @Override
     protected void onDestroy() {
         super.onDestroy();
