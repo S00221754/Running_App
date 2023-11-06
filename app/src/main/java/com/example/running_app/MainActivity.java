@@ -19,86 +19,73 @@ public class MainActivity extends AppCompatActivity {
 
      Timer timer;
      TextView timerTextView;
-     Button btnReset,btnStart, btnPause;
-        int seconds = 40, minutes = 4;
+     Button btnReset,btnStart;
+     boolean TimerRunning = false; //to see if the
+        int seconds = 55, minutes = 4;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         btnReset = findViewById(R.id.btnReset);
         btnStart = findViewById(R.id.btnStart);
-        btnPause = findViewById(R.id.btnPause);
         timerTextView = findViewById(R.id.tblkTimer);
 
-        btnStart.setOnClickListener(new View.OnClickListener()
-        {
+        btnStart.setOnClickListener(new View.OnClickListener() {
+
+
             @Override
             public void onClick(View view) {
-                Runnable myRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        // Increment the counter and update the TextView with the timer value
-                        runOnUiThread(new Runnable() {
-
-                            @Override
-                            public void run() {
-                                if (minutes != 5){
-                                    seconds++;
-                                    if (seconds == 60) {
-                                        minutes++;
-                                        seconds = 0;
+                if (TimerRunning == false) {
+                    //Runnable used to execute the code with specific instructions
+                    Runnable myRunnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            // Increment the counter and update the TextView with the timer value
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    //checks if the timer is at 5 minutes.
+                                    if (minutes != 5) {
+                                        seconds++;
+                                        if (seconds == 60) {
+                                            minutes++;
+                                            seconds = 0;
+                                        }
+                                        String timeString = String.format("%02d:%02d", minutes, seconds);
+                                        timerTextView.setText(timeString);
+                                    } else {
+                                        timer.stopTimer();
+                                        TimerRunning = false;
+                                        btnStart.setText("Start");
                                     }
-                                    String timeString = String.format("%02d:%02d", minutes, seconds);
-                                    timerTextView.setText(timeString);
                                 }
-                                else {
-                                    timer.stopTimer();
-                                    Toast.makeText(MainActivity.this, "Max Time", Toast.LENGTH_SHORT).show();
-                                }
+                            });
+                        }
+                    };
+                    //Making the timer and using the runnable
+                    timer = new Timer(myRunnable, 1000, true); // 1000 milliseconds interval, start the timer immediately
 
-
-                            }
-                        });
-                    }
-                };
-
-
-                // Create an instance of the Timer class
-                timer = new Timer(myRunnable, 1000, true); // 1000 milliseconds interval, start the timer immediately
+                    TimerRunning = true;
+                    btnStart.setText("Pause");
+                } else {
+                    timer.stopTimer();
+                    TimerRunning = false;
+                    btnStart.setText("Start");
+                }
             }
         });
-
-        // Implement your Runnable
-
     }
     public void PauseTimer(View v){
         timer.stopTimer();
     }
-    /*
-    public void StartTimer(View v){
-        timer.startTimer();
-    }
-
-    public void StartOrPause(View v){
-        String currentMode = btnStartPause.getText().toString();
-
-        if (currentMode == "Start"){
-            timer.startTimer();
-            btnStartPause.setText("Pause");
-        }
-        else
-        {
-            timer.stopTimer();
-            btnStartPause.setText("Start");
-        }
-    }
-    */
     public void ResetTimer(View v){
         timer.stopTimer();
         seconds = 0;
         minutes = 0;
         String timeString = String.format("%02d:%02d", minutes, seconds);
         timerTextView.setText(timeString);
+        TimerRunning = false;
+        btnStart.setText("Start");
     }
     @Override
     protected void onDestroy() {
