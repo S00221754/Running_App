@@ -20,7 +20,7 @@ public class StepCounter implements SensorEventListener {
     private int stepCount = 0;
     private StepUpdate UpdateSteps;
 
-
+    private boolean isTimerRunning = false;
 
     public StepCounter(Context context, StepUpdate callback) {
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
@@ -32,20 +32,26 @@ public class StepCounter implements SensorEventListener {
     //when the sensor values change this is called to calculate if a step has been taken or not.
     @Override
     public void onSensorChanged(SensorEvent event) {
-        acceleration[0] = event.values[0]; //x
-        acceleration[1] = event.values[1]; //y
-        acceleration[2] = event.values[2]; //z
+        if (isTimerRunning == true){
+            acceleration[0] = event.values[0]; //x
+            acceleration[1] = event.values[1]; //y
+            acceleration[2] = event.values[2]; //z
 
-        // Calculating if a step is taken
-        double rms = Math.sqrt(acceleration[0] * acceleration[0] + acceleration[1] * acceleration[1] + acceleration[2] * acceleration[2]);
+            // Calculating if a step is taken
+            double rms = Math.sqrt(acceleration[0] * acceleration[0] + acceleration[1] * acceleration[1] + acceleration[2] * acceleration[2]);
 
-        //if the rms is greater than the threshold it is considered a step
-        if (rms > rmsThreshold ) {
-            // Step goes up by 1
-            stepCount++;
-            //updates the interface
-            UpdateSteps.stepDetected(stepCount);
+            //if the rms is greater than the threshold it is considered a step
+            if (rms > rmsThreshold ) {
+                // Step goes up by 1
+                stepCount++;
+                //updates the interface
+                UpdateSteps.stepDetected(stepCount);
+            }
         }
+
+    }
+    public void setTimerRunning(boolean isRunning) {
+        isTimerRunning = isRunning;
     }
 
     @Override
@@ -54,6 +60,7 @@ public class StepCounter implements SensorEventListener {
     }
     //returns the step count when called
     public int getStepCount() {
+
         return stepCount;
     }
     //Stops the tracker

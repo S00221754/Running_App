@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity implements StepCounter.StepU
      Timer timer;
      TextView timerTextView, stepCountTextView;
      Button btnReset,btnStart;
-     boolean TimerRunning = false; //to see if the
+     boolean timerRunning = false, paused = false; //to see if the
         int seconds = 0, minutes = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +30,6 @@ public class MainActivity extends AppCompatActivity implements StepCounter.StepU
         btnReset = findViewById(R.id.btnReset);
         btnStart = findViewById(R.id.btnStart);
         timerTextView = findViewById(R.id.tblkTimer);
-
         stepCountTextView = findViewById(R.id.stepCountTextView);
         stepCounter = new StepCounter(this, this); // call the step tracker class with the context and callback.
 
@@ -39,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements StepCounter.StepU
 
             @Override
             public void onClick(View view) {
-                if (TimerRunning == false) {
+                if (timerRunning == false) {
                     //Runnable used to execute the code with specific instructions
                     Runnable myRunnable = new Runnable() {
                         @Override
@@ -51,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements StepCounter.StepU
                                     //checks if the timer is at 5 minutes.
                                     if (minutes != 5) {
                                         seconds++;
+                                        paused = false;
                                         if (seconds == 60) {
                                             minutes++;
                                             seconds = 0;
@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements StepCounter.StepU
                                         timerTextView.setText(timeString);
                                     } else {
                                         timer.stopTimer();
-                                        TimerRunning = false;
+                                        timerRunning = false;
                                         btnStart.setText("Start");
                                     }
                                 }
@@ -70,12 +70,15 @@ public class MainActivity extends AppCompatActivity implements StepCounter.StepU
                     timer = new Timer(myRunnable, 1000, true); // 1000 milliseconds interval, start the timer immediately
 
                     //changes start button to pause
-                    TimerRunning = true;
+                    timerRunning = true;
+                    stepCounter.setTimerRunning(true);
                     btnStart.setText("Pause");
                 } else {
                     timer.stopTimer();
-                    TimerRunning = false;
+                    timerRunning = false;
+                    stepCounter.setTimerRunning(false);
                     btnStart.setText("Start");
+                    paused = true;
                 }
             }
         });
@@ -84,16 +87,17 @@ public class MainActivity extends AppCompatActivity implements StepCounter.StepU
         timer.stopTimer();
     }
     public void ResetTimer(View v){
-        if (TimerRunning == true)
+        if (timerRunning == true || paused == true)
         {
             timer.stopTimer();
             seconds = 0;
             minutes = 0;
             String timeString = String.format("%02d:%02d", minutes, seconds);
             timerTextView.setText(timeString);
-            TimerRunning = false;
+            timerRunning = false;
             stepCounter.resetStepCount();
             btnStart.setText("Start");
+            stepCounter.setTimerRunning(false);
             stepCountTextView.setText(String.valueOf(0));
         }
 
