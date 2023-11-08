@@ -15,13 +15,14 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements StepCounter.StepUpdate {
 
+     StepCounter stepCounter;
      Timer timer;
-     TextView timerTextView;
+     TextView timerTextView, stepCountTextView;
      Button btnReset,btnStart;
      boolean TimerRunning = false; //to see if the
-        int seconds = 55, minutes = 4;
+        int seconds = 0, minutes = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,6 +30,9 @@ public class MainActivity extends AppCompatActivity {
         btnReset = findViewById(R.id.btnReset);
         btnStart = findViewById(R.id.btnStart);
         timerTextView = findViewById(R.id.tblkTimer);
+
+        stepCountTextView = findViewById(R.id.stepCountTextView);
+        stepCounter = new StepCounter(this, this); // call the step tracker class with the context and callback.
 
         btnStart.setOnClickListener(new View.OnClickListener() {
 
@@ -65,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
                     //Making the timer and using the runnable
                     timer = new Timer(myRunnable, 1000, true); // 1000 milliseconds interval, start the timer immediately
 
+                    //changes start button to pause
                     TimerRunning = true;
                     btnStart.setText("Pause");
                 } else {
@@ -79,22 +84,32 @@ public class MainActivity extends AppCompatActivity {
         timer.stopTimer();
     }
     public void ResetTimer(View v){
-        timer.stopTimer();
-        seconds = 0;
-        minutes = 0;
-        String timeString = String.format("%02d:%02d", minutes, seconds);
-        timerTextView.setText(timeString);
-        TimerRunning = false;
-        btnStart.setText("Start");
+        if (TimerRunning == true)
+        {
+            timer.stopTimer();
+            seconds = 0;
+            minutes = 0;
+            String timeString = String.format("%02d:%02d", minutes, seconds);
+            timerTextView.setText(timeString);
+            TimerRunning = false;
+            stepCounter.resetStepCount();
+            btnStart.setText("Start");
+            stepCountTextView.setText(String.valueOf(0));
+        }
+
     }
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
+        stepCounter.stopTracking();
         // Stop the timer when the activity is destroyed
         if (timer != null) {
             timer.stopTimer();
         }
+    }
+    @Override
+    public void stepDetected(int stepCount) {
+        runOnUiThread(() -> stepCountTextView.setText(String.valueOf(stepCount))); //runOnUiThread is used to update steps when a step has been taken.
     }
 }
 
