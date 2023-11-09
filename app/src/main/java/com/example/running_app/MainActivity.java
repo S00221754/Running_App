@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity implements StepCounter.StepU
      Timer timer;
      TextView timerTextView, stepCountTextView;
      Button btnReset,btnStart, btnStop, btnShowRun;
-     boolean timerRunning = false, paused = false; //to see if the
+     boolean timerRunning = false; //to see if the timer is running
         int seconds = 0, minutes = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +51,6 @@ public class MainActivity extends AppCompatActivity implements StepCounter.StepU
                                 @Override
                                 public void run() {
                                     seconds++;
-                                    paused = false;
                                     if (seconds == 60) {
                                         minutes++;
                                         seconds = 0;
@@ -69,10 +68,12 @@ public class MainActivity extends AppCompatActivity implements StepCounter.StepU
                     timerRunning = true;
                     stepCounter.setTimerRunning(true);
                     btnStart.setText("Pause");
+                    //makes buttons visible
                     btnReset.setVisibility(View.VISIBLE);
                     btnStop.setVisibility(View.VISIBLE);
 
                 } else {
+                    //when pause is clicked tiemr stops
                     timer.stopTimer();
                     timerRunning = false;
                     stepCounter.setTimerRunning(false);
@@ -81,14 +82,13 @@ public class MainActivity extends AppCompatActivity implements StepCounter.StepU
             }
         });
     }
-    /*public void PauseTimer(View v){
-        timer.stopTimer();
-    }*/
+    //stops the timer and makes button to show run visible
     public void StopRun(View v){
         timer.stopTimer();
         btnStart.setVisibility(View.INVISIBLE);
         btnShowRun.setVisibility(View.VISIBLE);
     }
+    //resets everything to default
     public void ResetTimer(View v){
         timer.stopTimer();
         seconds = 0;
@@ -109,6 +109,8 @@ public class MainActivity extends AppCompatActivity implements StepCounter.StepU
 
 
         int totalStep = Integer.parseInt(stepCountTextView.getText().toString());
+
+        //starting new activity and passing values from this activity to the other
         Intent ShowRunActivity = new Intent(getApplicationContext(), RunDetails.class);
         ShowRunActivity.putExtra("Steps", totalStep);
         ShowRunActivity.putExtra("Minutes", minutes);

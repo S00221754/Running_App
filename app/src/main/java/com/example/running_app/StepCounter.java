@@ -20,7 +20,7 @@ public class StepCounter implements SensorEventListener {
     private int stepCount = 0;
     private StepUpdate UpdateSteps;
 
-    private boolean isTimerRunning = false;
+    private boolean TimerRunning = false; //checks if the timer is running and to allow the counting of steps.
 
     public StepCounter(Context context, StepUpdate callback) {
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
@@ -32,7 +32,7 @@ public class StepCounter implements SensorEventListener {
     //when the sensor values change this is called to calculate if a step has been taken or not.
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (isTimerRunning == true){
+        if (TimerRunning == true){
             acceleration[0] = event.values[0]; //x
             acceleration[1] = event.values[1]; //y
             acceleration[2] = event.values[2]; //z
@@ -50,8 +50,9 @@ public class StepCounter implements SensorEventListener {
         }
 
     }
+    //so the main activity can tell this class the timer is running
     public void setTimerRunning(boolean isRunning) {
-        isTimerRunning = isRunning;
+        TimerRunning = isRunning;
     }
 
     @Override

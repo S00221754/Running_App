@@ -25,11 +25,14 @@ public class RunDetails extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_run_details);
+
+        //transferring values from the main to this activity
         Bundle runDetails = getIntent().getExtras();
         totalSteps = runDetails.getInt("Steps");
         minutes = runDetails.getInt("Minutes");
         seconds = runDetails.getInt("Seconds");
 
+        //linking views
         date = findViewById(R.id.txtViewDate);
         metres = findViewById(R.id.txtViewMetres);
         calories = findViewById(R.id.txtViewCaloriesBurned);
@@ -37,6 +40,7 @@ public class RunDetails extends AppCompatActivity {
         btnReturn = findViewById(R.id.btnReturn);
 
         //source https://stackoverflow.com/questions/8654990/how-can-i-get-current-date-in-android
+
         //Set current date of the run.
         Date c = Calendar.getInstance().getTime();
         SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy", Locale.getDefault());
@@ -51,11 +55,14 @@ public class RunDetails extends AppCompatActivity {
         //time taken
         totalTime = (minutes * 60) + seconds;
 
+        //setting text
         date.setText(formattedDate);
         metres.setText(formattedMetres + " Metres");
         calories.setText(formattedCalories + " Burned");
         time.setText(String.valueOf(totalTime) + " Seconds");
 
+
+        //button to return to main activity.
         btnReturn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
