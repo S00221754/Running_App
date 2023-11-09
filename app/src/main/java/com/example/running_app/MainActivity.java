@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements StepCounter.StepU
                     btnStop.setVisibility(View.VISIBLE);
 
                 } else {
-                    //when pause is clicked tiemr stops
+                    //when pause is clicked timer stops
                     timer.stopTimer();
                     timerRunning = false;
                     stepCounter.setTimerRunning(false);
