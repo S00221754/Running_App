@@ -2,6 +2,7 @@ package com.example.running_app;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -103,6 +104,16 @@ public class MainActivity extends AppCompatActivity implements StepCounter.StepU
         btnStop.setVisibility(View.INVISIBLE);
         btnShowRun.setVisibility(View.INVISIBLE);
         btnStart.setVisibility(View.VISIBLE);
+    }
+    public void ShowRun(View v){
+
+
+        int totalStep = Integer.parseInt(stepCountTextView.getText().toString());
+        Intent ShowRunActivity = new Intent(getApplicationContext(), RunDetails.class);
+        ShowRunActivity.putExtra("Steps", totalStep);
+        ShowRunActivity.putExtra("Minutes", minutes);
+        ShowRunActivity.putExtra("Seconds", seconds);
+        startActivity(ShowRunActivity);
     }
     @Override
     protected void onDestroy() {
