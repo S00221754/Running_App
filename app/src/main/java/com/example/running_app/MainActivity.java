@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity implements StepCounter.StepU
      StepCounter stepCounter;
      Timer timer;
      TextView timerTextView, stepCountTextView;
-     Button btnReset,btnStart;
+     Button btnReset,btnStart, btnStop, btnShowRun;
      boolean timerRunning = false, paused = false; //to see if the
         int seconds = 0, minutes = 0;
     @Override
@@ -29,6 +29,8 @@ public class MainActivity extends AppCompatActivity implements StepCounter.StepU
         setContentView(R.layout.activity_main);
         btnReset = findViewById(R.id.btnReset);
         btnStart = findViewById(R.id.btnStart);
+        btnStop = findViewById(R.id.btnStop);
+        btnShowRun = findViewById(R.id.btnShowRun);
         timerTextView = findViewById(R.id.tblkTimer);
         stepCountTextView = findViewById(R.id.stepCountTextView);
         stepCounter = new StepCounter(this, this); // call the step tracker class with the context and callback.
@@ -47,21 +49,14 @@ public class MainActivity extends AppCompatActivity implements StepCounter.StepU
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    //checks if the timer is at 5 minutes.
-                                    if (minutes != 5) {
-                                        seconds++;
-                                        paused = false;
-                                        if (seconds == 60) {
-                                            minutes++;
-                                            seconds = 0;
-                                        }
-                                        String timeString = String.format("%02d:%02d", minutes, seconds);
-                                        timerTextView.setText(timeString);
-                                    } else {
-                                        timer.stopTimer();
-                                        timerRunning = false;
-                                        btnStart.setText("Start");
+                                    seconds++;
+                                    paused = false;
+                                    if (seconds == 60) {
+                                        minutes++;
+                                        seconds = 0;
                                     }
+                                    String timeString = String.format("%02d:%02d", minutes, seconds);
+                                    timerTextView.setText(timeString);
                                 }
                             });
                         }
@@ -73,34 +68,41 @@ public class MainActivity extends AppCompatActivity implements StepCounter.StepU
                     timerRunning = true;
                     stepCounter.setTimerRunning(true);
                     btnStart.setText("Pause");
+                    btnReset.setVisibility(View.VISIBLE);
+                    btnStop.setVisibility(View.VISIBLE);
+
                 } else {
                     timer.stopTimer();
                     timerRunning = false;
                     stepCounter.setTimerRunning(false);
                     btnStart.setText("Start");
-                    paused = true;
                 }
             }
         });
     }
-    public void PauseTimer(View v){
+    /*public void PauseTimer(View v){
         timer.stopTimer();
+    }*/
+    public void StopRun(View v){
+        timer.stopTimer();
+        btnStart.setVisibility(View.INVISIBLE);
+        btnShowRun.setVisibility(View.VISIBLE);
     }
     public void ResetTimer(View v){
-        if (timerRunning == true || paused == true)
-        {
-            timer.stopTimer();
-            seconds = 0;
-            minutes = 0;
-            String timeString = String.format("%02d:%02d", minutes, seconds);
-            timerTextView.setText(timeString);
-            timerRunning = false;
-            stepCounter.resetStepCount();
-            btnStart.setText("Start");
-            stepCounter.setTimerRunning(false);
-            stepCountTextView.setText(String.valueOf(0));
-        }
-
+        timer.stopTimer();
+        seconds = 0;
+        minutes = 0;
+        String timeString = String.format("%02d:%02d", minutes, seconds);
+        timerTextView.setText(timeString);
+        timerRunning = false;
+        stepCounter.resetStepCount();
+        btnStart.setText("Start");
+        stepCounter.setTimerRunning(false);
+        stepCountTextView.setText(String.valueOf(0));
+        btnReset.setVisibility(View.INVISIBLE);
+        btnStop.setVisibility(View.INVISIBLE);
+        btnShowRun.setVisibility(View.INVISIBLE);
+        btnStart.setVisibility(View.VISIBLE);
     }
     @Override
     protected void onDestroy() {
